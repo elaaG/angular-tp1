@@ -76,6 +76,9 @@
                             >
                           }
                           @if (authService.isAuthenticated()) {
+                             <span class="navbar-text me-2">{{ authService.email() }}
+
+                             </span>
                             <a
                               class="nav-link"
                               (click)="logout()"

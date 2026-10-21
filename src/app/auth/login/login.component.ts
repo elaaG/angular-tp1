@@ -1,17 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { CredentialsDto } from '../dto/credentials.dto';
-import { ROUTES, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from '@relynn/ngx-toastr';
 import { APP_ROUTES } from '../../../config/routes.config';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [FormsModule],
 })
 export class LoginComponent {
   private authService = inject(AuthService);
@@ -20,12 +20,11 @@ export class LoginComponent {
 
   login(credentials: CredentialsDto) {
     this.authService.login(credentials).subscribe({
-      next: (response) => {
-        localStorage.setItem('token', response.id);
+      next: () => {
         this.toastr.success(`Bienvenu chez vous :)`);
         this.router.navigate([APP_ROUTES.cv]);
       },
-      error: (error) => {
+      error: () => {
         this.toastr.error('Veuillez vérifier vos credentials');
       },
     });
