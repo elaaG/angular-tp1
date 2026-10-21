@@ -28,6 +28,7 @@ import { NgclassComponent } from "./directives/ngclass/ngclass.component";
 import { TodoComponent } from "./todo/todo/todo.component";
 
 import { HighlightDirective } from "./directives/highlight.directive";
+import { RainbowDirective } from './directives/rainbow.directive';
 
 import { Btc2usdPipe } from "./pipes/btc2usd.pipe";
 import { AppRoutingModule } from "./app-routing.module";
@@ -51,6 +52,7 @@ import { ProductsComponent } from "./products/products.component";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { AutocompleteComponent } from "./cv/autocomplete/autocomplete.component";
 import { SliderComponent } from "./rxjs/slider/slider.component";
+import { RainbowComponent } from './components/rainbow/rainbow.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +78,7 @@ import { SliderComponent } from "./rxjs/slider/slider.component";
     MiniWordComponent,
     NgclassComponent,
     HighlightDirective,
+    RainbowDirective,
     Btc2usdPipe,
     TodoComponent,
     NavbarComponent,
@@ -90,6 +93,7 @@ import { SliderComponent } from "./rxjs/slider/slider.component";
     RhComponent,
     UserListComponent,
     ProductsComponent,
+    RainbowComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
