@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY, map, switchMap } from 'rxjs';
 import { Cv } from '../model/cv';
 import { CvService } from '../services/cv.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,32 +10,30 @@ import { AuthService } from '../../auth/services/auth.service';
 import { DefaultImagePipe } from '../pipes/default-image.pipe';
 
 @Component({
-    selector: 'app-details-cv',
-    templateUrl: './details-cv.component.html',
-    styleUrls: ['./details-cv.component.css'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [DefaultImagePipe]
+  selector: 'app-details-cv',
+  templateUrl: './details-cv.component.html',
+  styleUrls: ['./details-cv.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [DefaultImagePipe],
 })
-export class DetailsCvComponent implements OnInit {
+export class DetailsCvComponent {
   private cvService = inject(CvService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private toastr = inject(ToastrService);
   authService = inject(AuthService);
 
-  cv: Cv | null = null;
+  protected cv = toSignal(
+    this.activatedRoute.paramMap.pipe(
+      map((params) => Number(params.get('id'))),
+      switchMap((id) => this.cvService.getCvById(id)),
+      catchError(() => {
+        this.router.navigate([APP_ROUTES.cv]);
+        return EMPTY;
+      }),
+    ),
+  );
 
-  ngOnInit() {
-    const id = this.activatedRoute.snapshot.params['id'];
-    this.cvService.getCvById(+id).subscribe({
-        next: (cv) => {
-          this.cv = cv;
-        },
-        error: (e) => {
-          this.router.navigate([APP_ROUTES.cv]);
-        },
-      });
-  }
   deleteCv(cv: Cv) {
     this.cvService.deleteCvById(cv.id).subscribe({
       next: () => {
@@ -42,7 +42,7 @@ export class DetailsCvComponent implements OnInit {
       },
       error: () => {
         this.toastr.error(
-          `Problème avec le serveur veuillez contacter l'admin`
+          `Problème avec le serveur veuillez contacter l'admin`,
         );
       },
     });
