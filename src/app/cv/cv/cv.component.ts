@@ -1,24 +1,30 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Cv } from "../model/cv";
 import { LoggerService } from "../../services/logger.service";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@relynn/ngx-toastr";
 import { CvService } from "../services/cv.service";
+import { ListComponent } from "../list/list.component";
+import { CvCardComponent } from "../cv-card/cv-card.component";
+import { EmbaucheComponent } from "../embauche/embauche.component";
+import { UpperCasePipe, DatePipe } from "@angular/common";
 @Component({
-  selector: "app-cv",
-  templateUrl: "./cv.component.html",
-  styleUrls: ["./cv.component.css"],
+    selector: "app-cv",
+    templateUrl: "./cv.component.html",
+    styleUrls: ["./cv.component.css"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ListComponent, CvCardComponent, EmbaucheComponent, UpperCasePipe, DatePipe]
 })
 export class CvComponent {
+  private logger = inject(LoggerService);
+  private toastr = inject(ToastrService);
+  private cvService = inject(CvService);
+
   cvs: Cv[] = [];
   selectedCv: Cv | null = null;
   /*   selectedCv: Cv | null = null; */
   date = new Date();
 
-  constructor(
-    private logger: LoggerService,
-    private toastr: ToastrService,
-    private cvService: CvService
-  ) {
+  constructor() {
     this.cvService.getCvs().subscribe({
       next: (cvs) => {
         this.cvs = cvs;
