@@ -1,18 +1,40 @@
-<div class="row">
-  <div class="col">
-    <ol class="list-group">
-      @for (todo of todos; track todo) {
-        <li class="list-group-item">
-          {{todo.name}} : {{todo.content}}
-          <i (click)="deleteTodo(todo)" class="fa fa-trash" aria-hidden="true"></i>
-        </li>
-      }
-    </ol>
+<div class="alert alert-info">
+  <div class="row g-2">
+    <div class="col">
+      <input [(ngModel)]="name" type="text" class="form-control form-control-sm" placeholder="name" />
+    </div>
+    <div class="col">
+      <input [(ngModel)]="content" type="text" class="form-control form-control-sm" placeholder="content" />
+    </div>
+    <div class="col-auto">
+      <button
+        (click)="addTodo()"
+        [disabled]="!name().trim() || !content().trim()"
+        class="btn btn-danger btn-sm"
+      >add</button>
+    </div>
   </div>
-  <div class="col">
-    name: <input [(ngModel)]="todo.name" type="text" class="form-control">
-    content: <input [(ngModel)]="todo.content" type="text" class="form-control">
-    <button (click)="addTodo()" [disabled]="!todo.name.trim() || !todo.content.trim()"
-    class="btn btn-primary m-2">add</button>
+
+  <div class="row g-0 mt-2">
+    @for (status of statuses; track status) {
+      <div class="col alert mb-0 rounded-0" [class]="styles[status]">
+        <h2>{{ titles[status] }}</h2>
+
+        @for (todo of groups()[status]; track todo.id) {
+          <div class="mb-2">
+            <small>{{ todo.name }} {{ todo.content }}</small>
+            <select
+              class="form-control form-control-sm"
+              [ngModel]="todo.status"
+              (ngModelChange)="move(todo.id, $event)"
+            >
+              @for (option of statuses; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>

@@ -1,30 +1,52 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Todo } from '../model/todo';
-import { TodoService } from '../service/todo.service';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TODO_STATUSES, TodoStatus } from '../model/todo';
+import { TodoService } from '../service/todo.service';
 
 @Component({
-    selector: 'app-todo',
-    templateUrl: './todo.component.html',
-    styleUrls: ['./todo.component.css'],
-    providers: [TodoService],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule]
+  selector: 'app-todo',
+  templateUrl: './todo.component.html',
+  styleUrls: ['./todo.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [FormsModule],
 })
 export class TodoComponent {
   private todoService = inject(TodoService);
 
-  todos: Todo[] = [];
-  todo = new Todo();
-  constructor() {
-    this.todos = this.todoService.getTodos();
-  }
-  addTodo() {
-    this.todoService.addTodo(this.todo);
-    this.todo = new Todo();
+  protected groups = this.todoService.todosByStatus;
+  protected statuses = TODO_STATUSES;
+  protected titles: Record<TodoStatus, string> = {
+    waiting: 'Waiting',
+    'in progress': 'In Progress Todos',
+    done: 'Done Todos',
+  };
+
+  protected styles: Record<TodoStatus, string> = {
+    waiting: 'alert-secondary',
+    'in progress': 'alert-warning',
+    done: 'alert-success',
+  };
+
+  protected name = signal('');
+  protected content = signal('');
+
+  addTodo(): void {
+    if (!this.name().trim() || !this.content().trim()) return;
+    this.todoService.addTodo(this.name(), this.content());
+    this.name.set('');
+    this.content.set('');
   }
 
-  deleteTodo(todo: Todo) {
-    this.todoService.deleteTodo(todo);
+  move(id: number, status: TodoStatus): void {
+    this.todoService.changeStatus(id, status);
+  }
+
+  deleteTodo(id: number): void {
+    this.todoService.deleteTodo(id);
   }
 }
